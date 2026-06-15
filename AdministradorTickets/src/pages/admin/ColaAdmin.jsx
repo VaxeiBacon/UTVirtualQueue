@@ -8,7 +8,8 @@ import Breadcrumb from "../components/Breadcrumb";
 import Footer from "../usuario/componentes/Footer";
 import api from "../../services/api";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5003";
+console.log("Conectando socket a:", SOCKET_URL);
 
 export default function ColaAdmin() {
   const navigate = useNavigate();

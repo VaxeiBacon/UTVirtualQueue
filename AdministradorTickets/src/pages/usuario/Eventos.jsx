@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../components/Breadcrumb";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5003";
 
 export default function Eventos() {
   const navigate = useNavigate();

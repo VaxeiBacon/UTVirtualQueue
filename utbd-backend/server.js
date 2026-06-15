@@ -18,7 +18,11 @@ const app = express();
 
 
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://colavirtualut.portfolio.cloud', // Sin diagonal al final
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Rutas API REST (Síncronas)
@@ -48,7 +52,7 @@ const io = new Server(server, {
 inicializarColaSockets(io);
 app.set('io', io);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5003;
 // CRITICAL: Escuchar desde 'server', NO desde 'app'
 server.listen(PORT, () => {
     console.log(`Servidor completo corriendo en el puerto ${PORT}`);

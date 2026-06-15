@@ -40,7 +40,7 @@ export default function HomePage() {
   // WebSockets solo para actualizar turnos si hay filas activas
   useEffect(() => {
     if (!token || misFilasActivas.length === 0) return;
-    const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:3000");
+    const socket = io(import.meta.env.VITE_SOCKET_URL || "http://localhost:5003");
     socket.on("actualizar_turnos", (data) => {
       setMisFilasActivas(prev => prev.map(f => f.evento_id === data.evento_id ? {...f, evento_turno_actual: data.nuevo_turno_actual} : f));
     });

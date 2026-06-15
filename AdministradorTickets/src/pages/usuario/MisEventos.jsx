@@ -6,7 +6,7 @@ import api from "../../services/api";
 import Breadcrumb from "../components/Breadcrumb";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5003";
 
 export default function MisEventos() {
   const socketRef = useRef(null);

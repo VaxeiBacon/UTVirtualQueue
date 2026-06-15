@@ -8,7 +8,7 @@ import Footer from "./componentes/Footer";
 import Breadcrumb from "../components/Breadcrumb";
 import "./DetalleEvento.css";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:3000";
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5003";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
 export default function DetalleEvento() {
