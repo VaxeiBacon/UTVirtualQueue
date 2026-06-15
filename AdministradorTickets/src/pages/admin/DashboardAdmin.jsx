@@ -75,6 +75,13 @@ export default function DashboardAdmin() {
     }
     cargarDatos();
   }, []);
+  
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (!user || user.rol !== "ADMIN") {
+    navigate("/Homepage");
+  }
+  }, []);
 
   const handleCerrarSesion = () => {
     localStorage.removeItem("token");

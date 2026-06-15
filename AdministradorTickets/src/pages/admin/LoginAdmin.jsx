@@ -2,7 +2,7 @@
 import "./LoginAdmin.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../usuario/componentes/Navbar";
+import NavbarLoginAdmin from "./componentes/NavbarLoginAdmin";
 import Breadcrumb from "../components/Breadcrumb";
 import api from "../../services/api";
 
@@ -45,8 +45,10 @@ export default function LoginAdmin() {
 
   return (
     <div className="login-page">
-    <Navbar/>
-    <Breadcrumb />
+      <div className="header-admin">
+        <NavbarLoginAdmin/>
+        <Breadcrumb />
+      </div>
       <div className="login-card">
 
         <div className="login-header">

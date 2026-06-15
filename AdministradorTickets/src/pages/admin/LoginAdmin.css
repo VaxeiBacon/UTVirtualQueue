@@ -123,3 +123,31 @@ body{
 .btn-login:hover{
   background:#002A52;
 }
+
+/* Asegura que la página sea un bloque flex vertical */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* El header ocupa todo el ancho sin afectar el centrado del login */
+.header-admin {
+  width: 100%;
+}
+
+/* Contenedor que centra el login card */
+.login-container-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1; /* Esto hace que ocupe todo el espacio sobrante y centre la tarjeta */
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  /* Otros estilos que ya tengas */
+}

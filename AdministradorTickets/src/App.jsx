@@ -68,11 +68,6 @@ function App() {
         />
 
         <Route
-          path="/usuario/registro"
-          element={<RegistroUsuario />}
-        />
-
-        <Route
           path="/eventos"
           element={<Eventos />}
         />

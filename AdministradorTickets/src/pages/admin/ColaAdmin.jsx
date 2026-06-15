@@ -88,6 +88,13 @@ export default function ColaAdmin() {
     cargarEventos();
   }, []);
 
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (!user || user.rol !== "ADMIN") {
+    navigate("/Homepage");
+  }
+  }, []);
+
   // WebSocket
   useEffect(() => {
     if (!eventoSeleccionado) return;

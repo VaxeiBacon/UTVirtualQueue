@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 
 // Almacén temporal de códigos en memoria
@@ -115,5 +116,21 @@ exports.cambiarPassword = async (req, res) => {
     } catch (error) {
         console.error('Error en cambiarPassword:', error);
         res.status(500).json({ success: false, message: 'Error al actualizar la contraseña.' });
+    }
+};
+
+exports.cambiarPasswordAutenticado = async (req, res) => {
+    const { matricula, nuevaPassword } = req.body;
+
+    try {
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(nuevaPassword, salt);
+         await pool.query('CALL sp_actualizar_password(?, ?)', [matricula, hashedPassword]);  
+            res.status(200).json({ message: "Contraseña actualizada correctamente." });
+        
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        res.status(500).json({ message: "Error interno del servidor." });
     }
 };

@@ -59,7 +59,7 @@ export default function Login() {
               type="text"
               value={matricula}
               onChange={(e) => setMatricula(e.target.value)}
-              placeholder="Ingresa tu matrícula (ej. 23001234)"
+              placeholder="Ingresa tu matrícula (ej. 20260001)"
             />
 
             <label>Contraseña</label>
@@ -80,16 +80,6 @@ export default function Login() {
               Soy administrativo
             </Link>
           </form>
-
-          <div className="login-separador">
-            <span>¿No tienes cuenta?</span>
-          </div>
-
-          <Link to="/usuario/registro" style={{ textDecoration: "none" }}>
-            <button type="button" className="btn-registro-outline">
-              Crear cuenta nueva
-            </button>
-          </Link>
         </div>
       </div>
       <Footer />

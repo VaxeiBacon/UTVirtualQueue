@@ -4,12 +4,17 @@ import "./Navbar.css";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  // Obtenemos token y el objeto user para validar roles
   const [token, setToken] = useState(localStorage.getItem("token"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "null"));
 
-  // Escucha cambios en el storage si fuera necesario
+  // Detectamos si es administrador
+  const isAdmin = user?.rol === "ADMIN";
+
   useEffect(() => {
     const handleStorageChange = () => {
       setToken(localStorage.getItem("token"));
+      setUser(JSON.parse(localStorage.getItem("user") || "null"));
     };
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
@@ -18,7 +23,8 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setToken(null); // Actualiza el estado inmediatamente
+    setToken(null);
+    setUser(null);
     navigate("/Homepage");
     window.location.reload();
   };
@@ -40,7 +46,8 @@ export default function Navbar() {
         <Link to="/Homepage">Inicio</Link>
         <Link to="/eventos">Eventos</Link>
 
-        {token && (
+        {/* Links específicos solo para usuarios normales */}
+        {token && !isAdmin && (
           <>
             <Link to="/mis-eventos">Mis Eventos</Link>
             <Link to="/perfil">Perfil</Link>
@@ -48,9 +55,17 @@ export default function Navbar() {
         )}
 
         {token ? (
-          <button className="logout-btn" onClick={handleLogout}>
-            Cerrar Sesión
-          </button>
+          isAdmin ? (
+            // Botón especial para que el admin pueda volver a su panel
+            <Link to="/admin/dashboard" className="btn-admin-nav">
+              Volver al Dashboard
+            </Link>
+          ) : (
+            // Botón de cerrar sesión solo para alumnos
+            <button className="logout-btn" onClick={handleLogout}>
+              Cerrar Sesión
+            </button>
+          )
         ) : (
           <Link to="/login" className="login-btn-nav">
             Iniciar Sesión

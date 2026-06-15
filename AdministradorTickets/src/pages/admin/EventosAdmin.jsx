@@ -48,10 +48,18 @@ export default function EventosAdmin() {
     }
   };
 
+
   useEffect(() => {
     if (!token) { navigate("/admin/login"); return; }
     cargarEventos();
   }, []);
+
+  useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user") || "null");
+  if (!user || user.rol !== "ADMIN") {
+    navigate("/Homepage");
+  }
+}, []);
 
   // ─── Filtrar ──────────────────────────────────────────────────────────────
   const eventosFiltrados = eventos.filter((e) => {

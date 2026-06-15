@@ -173,3 +173,18 @@
 .login-btn-nav:hover {
   background-color: #166534;
 }
+.btn-admin-nav {
+  background-color: #205846; /* El color verde de tu admin */
+  color: white !important;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.btn-admin-nav:hover {
+  background-color: #1a4839;
+}

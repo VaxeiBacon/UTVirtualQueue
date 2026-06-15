@@ -1,0 +1,92 @@
+.navbar-admin-login {
+  display: flex;
+  align-items: center;
+  padding: 15px 30px;
+  background: white;
+  border-bottom: 2px solid #205846; /* El color de tu institución */
+  width: 100%;
+}
+
+.navbar-admin-brand {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.nav-admin-logo {
+  height: 50px;
+}
+
+.nav-admin-text h3 {
+  margin: 0;
+  color: #205846;
+  font-size: 1.2rem;
+}
+
+.nav-admin-text p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #666;
+}
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Ocupa toda la altura de la pantalla */
+  width: 100%;
+  background-color: #f4f7f6; /* Un color de fondo suave ayuda a centrar la vista */
+}
+
+.header-admin {
+  width: 100%;
+  background: white;
+}
+
+/* Este es el contenedor que hace el trabajo pesado de centrado */
+.login-card {
+  margin: auto; /* Centra horizontal y verticalmente */
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-header img {
+  width: 120px;
+  margin-bottom: 10px;
+}
+.navbar-admin-login {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Esto separa el logo del botón */
+  padding: 15px 30px;
+  background: white;
+  border-bottom: 2px solid #205846;
+  width: 100%;
+}
+
+.navbar-admin-menu {
+  display: flex;
+  align-items: center;
+}
+
+.btn-volver-inicio {
+  color: #205846;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 16px;
+  border: 1px solid #205846;
+  border-radius: 6px;
+  transition: all 0.3s;
+}
+
+.btn-volver-inicio:hover {
+  background: #205846;
+  color: white;
+}

@@ -10,6 +10,7 @@ const eventoRoutes = require('./routes/eventoRoutes');
 const colaRoutes = require('./routes/colaRoutes');
 const inicializarColaSockets = require('./sockets/colaSocket'); 
 const resetRoutes = require('./routes/resetRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
 const app = express();
 
 
@@ -26,6 +27,7 @@ app.use('/api/eventos', eventoRoutes);
 app.use('/api/cola', colaRoutes);
 app.use('/api/admins', adminRoutes);
 app.use('/api/reset', resetRoutes);
+app.use('/api/alumnos', usuarioRoutes);
 
 app.get('/', (req, res) => {
     res.send('Servidor HTTP y WebSockets corriendo perfectamente.');
