@@ -8,24 +8,23 @@ const adminRoutes = require('./routes/adminRoutes');
 const authRoutes = require('./routes/authRoutes');
 const eventoRoutes = require('./routes/eventoRoutes');
 const colaRoutes = require('./routes/colaRoutes');
-const inicializarColaSockets = require('./sockets/colaSocket'); 
+const inicializarColaSockets = require('./sockets/colaSocket');
 const resetRoutes = require('./routes/resetRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+
 const app = express();
 
-
-
-
-
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
 
 app.use(cors({
-  origin: 'https://colavirtualut.portfolio.cloud', // Sin diagonal al final
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
+    origin: CLIENT_URL,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true
 }));
+
 app.use(express.json());
 
-// Rutas API REST (Síncronas)
+// Rutas API REST
 app.use('/api/auth', authRoutes);
 app.use('/api/eventos', eventoRoutes);
 app.use('/api/cola', colaRoutes);
@@ -37,23 +36,20 @@ app.get('/', (req, res) => {
     res.send('Servidor HTTP y WebSockets corriendo perfectamente.');
 });
 
-// 1. Crear el servidor HTTP nativo usando la app de Express
 const server = http.createServer(app);
 
-// 2. Inicializar Socket.io sobre el servidor HTTP
 const io = new Server(server, {
     cors: {
-        origin: "*", 
-        methods: ["GET", "POST"]
+        origin: CLIENT_URL,
+        methods: ['GET', 'POST'],
+        credentials: true
     }
 });
 
-// 3. Pasar la instancia de 'io' a nuestro módulo especializado de sockets
 inicializarColaSockets(io);
 app.set('io', io);
 
 const PORT = process.env.PORT || 5003;
-// CRITICAL: Escuchar desde 'server', NO desde 'app'
 server.listen(PORT, () => {
-    console.log(`Servidor completo corriendo en el puerto ${PORT}`);
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
