@@ -1,4 +1,6 @@
+const bcrypt = require('bcryptjs');
 const pool = require('../config/db');
+
 
 // OBTENER TODOS LOS ADMINS
 exports.obtenerAdmins = async (req, res) => {
@@ -27,16 +29,15 @@ exports.obtenerAdmin = async (req, res) => {
 
 // CREAR ADMIN
 exports.crearAdmin = async (req, res) => {
-    const { nombre, matricula, password, principal } = req.body;
+    const { nombre, password, principal } = req.body;
 
-    if (!nombre || !matricula || !password) {
-        return res.status(400).json({ success: false, message: 'Nombre, matrícula y contraseña son requeridos.' });
+    if (!nombre || !password) {
+        return res.status(400).json({ success: false, message: 'Nombre y contraseña son requeridos.' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
-        await pool.query('CALL sp_crear_admin(?, ?, ?, ?)', [
+        await pool.query('CALL sp_crear_admin(?, ?, ?)', [
             nombre,
-            matricula,
             hashedPassword,
             principal ? 1 : 0
         ]);
@@ -51,17 +52,16 @@ exports.crearAdmin = async (req, res) => {
 // ACTUALIZAR ADMIN
 exports.actualizarAdmin = async (req, res) => {
     const { id } = req.params;
-    const { nombre, matricula, principal } = req.body;
+    const { nombre, principal } = req.body;
 
-    if (!nombre || !matricula) {
-        return res.status(400).json({ success: false, message: 'Nombre y matrícula son requeridos.' });
+    if (!nombre) {
+        return res.status(400).json({ success: false, message: 'Requieres un nombre para editar' });
     }
 
     try {
-        await pool.query('CALL sp_actualizar_admin(?, ?, ?, ?)', [
+        await pool.query('CALL sp_actualizar_admin(?, ?, ?)', [
             id,
             nombre,
-            matricula,
             principal ? 1 : 0
         ]);
         res.status(200).json({ success: true, message: 'Administrador actualizado correctamente.' });

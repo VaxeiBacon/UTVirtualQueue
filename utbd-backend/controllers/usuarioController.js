@@ -94,14 +94,18 @@ exports.obtenerAlumnos = async (req, res) => {
 };
 
 // ACTUALIZAR ALUMNO
+// ACTUALIZAR ALUMNO
 exports.actualizarAlumno = async (req, res) => {
     const { id } = req.params;
-    const { nombre, matricula, cuatrimestre } = req.body;
+    // Agregamos 'carrera' a la lista de datos que recibimos
+    const { nombre, matricula, cuatrimestre, carrera } = req.body;
 
     try {
-        await pool.query('CALL sp_actualizar_usuario(?, ?, ?, ?)', [
-            id, nombre, matricula, cuatrimestre
+        // Agregamos el quinto parámetro '?' y el valor 'carrera' al arreglo
+        await pool.query('CALL sp_actualizar_usuario(?, ?, ?, ?, ?)', [
+            id, nombre, matricula, cuatrimestre, carrera
         ]);
+        
         res.status(200).json({ success: true, message: 'Alumno actualizado correctamente.' });
     } catch (error) {
         console.error('Error en actualizarAlumno:', error);

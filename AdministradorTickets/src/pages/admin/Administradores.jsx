@@ -9,7 +9,6 @@ import api from "../../services/api";
 
 const formAdminInicial = {
   nombre: "",
-  matricula: "",
   password: "",
   confirmarPassword: "",
   principal: false,
@@ -40,7 +39,7 @@ export default function Administradores() {
   // Modal editar admin
   const [mostrarEditarAdmin, setMostrarEditarAdmin] = useState(false);
   const [adminEditando, setAdminEditando] = useState(null);
-  const [formEditarAdmin, setFormEditarAdmin] = useState({ nombre: "", matricula: "", principal: false });
+  const [formEditarAdmin, setFormEditarAdmin] = useState({ nombre: "", principal: false });
   const [errorEditarAdmin, setErrorEditarAdmin] = useState("");
 
   // ─── Estado alumnos ───────────────────────────────────────────────────────
@@ -111,9 +110,6 @@ export default function Administradores() {
     if (!formAdmin.nombre.trim() || formAdmin.nombre.trim().length < 3) {
       setErrorAdmin("El nombre debe tener al menos 3 caracteres."); return;
     }
-    if (!formAdmin.matricula.trim()) {
-      setErrorAdmin("La matrícula es requerida."); return;
-    }
     if (formAdmin.password.length < 6) {
       setErrorAdmin("La contraseña debe tener al menos 6 caracteres."); return;
     }
@@ -124,7 +120,6 @@ export default function Administradores() {
       setProcesandoAdmin(true);
       await api.post("/admins", {
         nombre: formAdmin.nombre,
-        matricula: formAdmin.matricula,
         password: formAdmin.password,
         principal: formAdmin.principal,
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -133,19 +128,13 @@ export default function Administradores() {
       setMostrarFormAdmin(false);
       cargarAdmins();
     } catch (error) {
-      setErrorAdmin(error.response?.data?.message || "Error al crear el administrador.");
-    } finally {
-      setProcesandoAdmin(false);
-    }
+      setErrorAdmin(error.response?.data?.message || "Error al crear.");
+    } finally { setProcesandoAdmin(false); }
   };
 
-  const abrirEditarAdmin = (admin) => {
+ const abrirEditarAdmin = (admin) => {
     setAdminEditando(admin);
-    setFormEditarAdmin({
-      nombre: admin.nombre,
-      matricula: admin.matricula,
-      principal: admin.principal === 1 || admin.principal === true,
-    });
+    setFormEditarAdmin({ nombre: admin.nombre, principal: !!admin.principal });
     setErrorEditarAdmin("");
     setMostrarEditarAdmin(true);
   };
@@ -153,12 +142,10 @@ export default function Administradores() {
   const handleEditarAdmin = async () => {
     setErrorEditarAdmin("");
     if (!formEditarAdmin.nombre.trim()) { setErrorEditarAdmin("El nombre es requerido."); return; }
-    if (!formEditarAdmin.matricula.trim()) { setErrorEditarAdmin("La matrícula es requerida."); return; }
     try {
       setProcesandoAdmin(true);
       await api.put(`/admins/${adminEditando.id}`, {
         nombre: formEditarAdmin.nombre,
-        matricula: formEditarAdmin.matricula,
         principal: formEditarAdmin.principal,
       }, { headers: { Authorization: `Bearer ${token}` } });
       alert("Administrador actualizado correctamente.");
@@ -211,7 +198,14 @@ export default function Administradores() {
       setMostrarFormAlumno(false);
       cargarAlumnos();
     } catch (error) {
-      setErrorAlumno(error.response?.data?.message || "Error al registrar el alumno.");
+      // AQUÍ ESTÁ EL CAMBIO PARA MANEJAR EL DUPLICADO:
+      const mensaje = error.response?.data?.message || "";
+      
+      if (mensaje.includes("Duplicate entry")) {
+        setErrorAlumno("Este correo ya está asignado a otro usuario.");
+      } else {
+        setErrorAlumno(mensaje || "Error al registrar el alumno.");
+      }
     } finally {
       setProcesandoAlumno(false);
     }
@@ -302,13 +296,10 @@ export default function Administradores() {
             {mostrarFormAdmin && (
               <div className="admin-form-card">
                 <h3>Crear administrador</h3>
+                <label>La matrícula se generará automáticamente</label>
                 <div className="form-group">
                   <label>Nombre completo</label>
                   <input type="text" name="nombre" placeholder="Ej. Juan García" value={formAdmin.nombre} onChange={handleFormAdminChange} />
-                </div>
-                <div className="form-group">
-                  <label>Matrícula</label>
-                  <input type="text" name="matricula" placeholder="Ej. ADM001" value={formAdmin.matricula} onChange={handleFormAdminChange} />
                 </div>
                 <div className="form-group">
                   <label>Contraseña</label>
@@ -398,15 +389,6 @@ export default function Administradores() {
               <option value="Mantenimiento Industrial">Mantenimiento Industrial</option>
               <option value="Energía Solar">Energía Solar</option>
             </optgroup>
-            <optgroup label="Ingeniería y Licenciatura">
-              <option value="Ingeniería en Energía y Desarrollo">Ingeniería en Energía y Desarrollo</option>
-              <option value="Ingeniería en Tecnologías de la Información e Innovación Digital">Ingeniería en Tecnologías de la Información e Innovación Digital</option>
-              <option value="Ingeniería en Mecatrónica">Ingeniería en Mecatrónica</option>
-              <option value="Ingeniería en Alimentos">Ingeniería en Alimentos</option>
-              <option value="Ingeniería en Logística Internacional">Ingeniería en Logística Internacional</option>
-              <option value="Ingeniería en Mantenimiento Industrial">Ingeniería en Mantenimiento Industrial</option>
-              <option value="Licenciatura en Negocios y Mercadotecnia">Licenciatura en Negocios y Mercadotecnia</option>
-            </optgroup>
           </select>
         </div>
 
@@ -466,10 +448,6 @@ export default function Administradores() {
             <div className="form-group">
               <label>Nombre</label>
               <input type="text" name="nombre" value={formEditarAdmin.nombre} onChange={(e) => setFormEditarAdmin(p => ({ ...p, nombre: e.target.value }))} />
-            </div>
-            <div className="form-group">
-              <label>Matrícula</label>
-              <input type="text" name="matricula" value={formEditarAdmin.matricula} onChange={(e) => setFormEditarAdmin(p => ({ ...p, matricula: e.target.value }))} />
             </div>
             <div className="form-group" style={{ flexDirection: "row", alignItems: "center", gap: "10px", marginTop: "15px" }}>
               <input type="checkbox" id="principalEditar" checked={formEditarAdmin.principal} onChange={(e) => setFormEditarAdmin(p => ({ ...p, principal: e.target.checked }))} style={{ width: "18px", height: "18px" }} />

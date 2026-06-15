@@ -75,12 +75,12 @@ export default function DashboardAdmin() {
     }
     cargarDatos();
   }, []);
-  
+
   useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-  if (!user || user.rol !== "ADMIN") {
-    navigate("/Homepage");
-  }
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!user || user.rol !== "ADMIN") {
+      navigate("/Homepage");
+    }
   }, []);
 
   const handleCerrarSesion = () => {
@@ -92,7 +92,7 @@ export default function DashboardAdmin() {
   return (
     <div className="dashboard-page">
       <NavbarAdmin />
-      <Breadcrumb/>
+      <Breadcrumb />
       <div className="dashboard-container">
 
         {/* HERO */}
@@ -207,7 +207,7 @@ export default function DashboardAdmin() {
           >
             🎟 Cola en Vivo
           </button>
-          {adminLogueado?.principal && (
+          {Boolean(adminLogueado?.principal) === true && (
             <button
               className="acceso-card"
               onClick={() => navigate("/admin/administradores")}

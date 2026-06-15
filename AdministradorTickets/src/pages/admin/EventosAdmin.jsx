@@ -169,6 +169,7 @@ export default function EventosAdmin() {
           fecha_inicio: form.fechaInicio,
           fecha_fin: form.fechaFin,
           capacidad_maxima: Number(form.capacidad),
+          tiempo_espera_aprox: Number(form.tiempoEspera),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );

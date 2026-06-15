@@ -42,10 +42,10 @@ export default function NavbarAdmin() {
         <Link to="/admin/eventos">Eventos</Link>
         <Link to="/admin/cola">Cola</Link>
 
-        {/* Solo el admin principal ve la gestión de administradores */}
-        {admin?.principal && (
-          <Link to="/admin/administradores">Administradores</Link>
-        )}
+       
+        {Boolean(admin?.principal) === true && (
+  <Link to="/admin/administradores">Administradores</Link>
+)}
 
         <button className="logout-btn" onClick={handleLogout}>
           Cerrar Sesión
