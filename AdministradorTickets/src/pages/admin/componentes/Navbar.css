@@ -1,0 +1,175 @@
+:root{
+  --azul:#205846;
+  --dorado:#818589;
+}
+
+.navbar{
+  width:100%;
+  background:var(--azul);
+  color:white;
+
+  padding:15px 30px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  border-bottom:4px solid var(--dorado);
+
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+
+  box-sizing:border-box;
+}
+
+/* LOGO Y TEXTO */
+
+.navbar-brand{
+  display:flex;
+  align-items:center;
+  gap:20px;
+  
+}
+
+.navbar-logo{
+  width:180px;
+  height:auto;
+  display:block;
+
+}
+
+.navbar-text h2{
+  margin:0;
+  color:white;
+  font-size:1.5rem;
+}
+
+.navbar-text span{
+  display:block;
+  margin-top:5px;
+
+  color:white;
+  font-size:.9rem;
+}
+
+/* MENÚ */
+
+.navbar-menu{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+
+  flex:1; /* ocupa todo el espacio restante */
+
+  gap:25px;
+}
+
+.navbar-menu a{
+  color:white;
+  text-decoration:none;
+
+  font-size:1.1rem;
+  font-weight:700;
+
+  padding:15px 25px;
+
+  border-radius:6px;
+
+  transition:.3s;
+}
+
+.navbar-menu a:hover{
+  background:rgba(255,255,255,.15);
+}
+
+.logout-btn{
+  background:#B71C1C;
+  color:white;
+
+  border:none;
+
+  padding:15px 25px;
+
+  font-size:1.1rem;
+  font-weight:700;
+
+  border-radius:6px;
+  max-width: fit-content;
+  cursor:pointer;
+}
+
+.logout-btn:hover{
+  background:#8E1515;
+}
+
+/* TABLET */
+
+@media (max-width:900px){
+
+  .navbar{
+    flex-direction:column;
+    gap:20px;
+    text-align:center;
+  }
+
+  .navbar-brand{
+    flex-direction:column;
+  }
+
+  .navbar-logo{
+    width:150px;
+  }
+
+  .navbar-menu{
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+}
+
+/* CELULAR */
+
+@media (max-width:600px){
+
+  .navbar{
+    padding:15px;
+  }
+
+  .navbar-logo{
+    width:130px;
+  }
+
+  .navbar-text h2{
+    font-size:1.1rem;
+  }
+
+  .navbar-text span{
+    font-size:.8rem;
+  }
+
+  .navbar-menu{
+    width:100%;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .navbar-menu a,
+  .logout-btn{
+    width:100%;
+    text-align:center;
+  }
+  
+}
+
+.login-btn-nav {
+  padding: 8px 16px;
+  background-color: #15803d; /* Verde institucional */
+  color: white !important;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.login-btn-nav:hover {
+  background-color: #166534;
+}

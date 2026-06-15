@@ -1,0 +1,73 @@
+:root{
+  --azul:#205846;
+  --gris:#F3F5F7;
+}
+
+.footer{
+  background:var(--azul);
+  color:white;
+  width:100%;
+}
+/* CONTENIDO PRINCIPAL */
+.footer-container{
+  max-width:1100px;
+  margin:0 auto;
+  padding:30px;
+
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:20px;
+}
+
+/* SECCIONES */
+.footer-section h3,
+.footer-section h4{
+  margin-bottom:10px;
+}
+
+.footer-section p{
+  font-size:.9rem;
+  line-height:1.5;
+  opacity:0.9;
+}
+
+.footer-section ul{
+  list-style:none;
+  padding:0;
+}
+
+.footer-section li{
+  margin-bottom:8px;
+  font-size:.9rem;
+  opacity:0.85;
+  cursor:pointer;
+}
+
+.footer-section li:hover{
+  opacity:1;
+  text-decoration:underline;
+}
+
+/* BOTTOM */
+.footer-bottom{
+  text-align:center;
+  padding:15px;
+  background:#163f31;
+  font-size:.85rem;
+}
+.footer a {
+  color: white;
+  text-decoration: none;
+}
+
+/* evita subrayado permanente */
+.footer a:visited {
+  color: white;
+  text-decoration: none;
+}
+
+/* hover bonito opcional */
+.footer a:hover {
+  text-decoration: underline;
+  opacity: 1;
+}
