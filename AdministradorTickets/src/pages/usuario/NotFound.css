@@ -1,0 +1,112 @@
+:root {
+  --azul: #205846;
+  --azul-oscuro: #163f31;
+  --gris: #F3F5F7;
+}
+
+.notfound-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--gris);
+}
+
+.notfound-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 30px;
+  text-align: center;
+}
+
+.notfound-code {
+  font-size: 8rem;
+  font-weight: 900;
+  color: var(--azul);
+  line-height: 1;
+  letter-spacing: -4px;
+  opacity: 0.15;
+  user-select: none;
+}
+
+.notfound-divider {
+  width: 80px;
+  height: 4px;
+  background: var(--azul);
+  margin: 20px auto;
+  border-radius: 2px;
+}
+
+.notfound-titulo {
+  font-size: 1.8rem;
+  color: var(--azul);
+  margin: 0 0 12px;
+}
+
+.notfound-descripcion {
+  color: #666;
+  font-size: 1rem;
+  margin: 0 0 40px;
+}
+
+.notfound-acciones {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.notfound-btn-principal {
+  padding: 14px 28px;
+  background: var(--azul);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.notfound-btn-principal:hover {
+  background: var(--azul-oscuro);
+}
+
+.notfound-btn-secundario {
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--azul);
+  border: 2px solid var(--azul);
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.notfound-btn-secundario:hover {
+  background: var(--azul);
+  color: white;
+}
+
+@media (max-width: 480px) {
+  .notfound-code {
+    font-size: 5rem;
+  }
+
+  .notfound-titulo {
+    font-size: 1.4rem;
+  }
+
+  .notfound-acciones {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .notfound-btn-principal,
+  .notfound-btn-secundario {
+    width: 100%;
+  }
+}

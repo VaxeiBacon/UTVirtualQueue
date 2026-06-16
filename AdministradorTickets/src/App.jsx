@@ -8,6 +8,7 @@ import ColaAdmin from "./pages/admin/ColaAdmin";
 import Administradores from "./pages/admin/Administradores";
 
 // USUARIO
+import NotFound from "./pages/usuario/NotFound";
 import HomePage from "./pages/usuario/HomePage";
 import LoginUsuario from "./pages/usuario/LoginUsuario";
 import RegistroUsuario from "./pages/usuario/RegistroUsuario";
@@ -102,11 +103,9 @@ function App() {
           element={<ResetPassword />}
         />
 
-        {/* Redirección automática si la ruta no existe (Evita pantallas en blanco) */}
-        <Route 
-          path="*" 
-          element={<Navigate to="/Homepage" replace />} 
-        />
+        <Route path="*" element={<NotFound />} />
+
+        
       </Routes>
     </BrowserRouter>
   );
