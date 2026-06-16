@@ -1,7 +1,8 @@
 // src/pages/admin/EventosAdmin.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./EventosAdmin.css";
+import { io } from "socket.io-client";
 import NavbarAdmin from "./componentes/NavbarAdmin";
 import Breadcrumb from "../components/Breadcrumb";
 import Footer from "../usuario/componentes/Footer";
@@ -16,9 +17,12 @@ const estadoInicial = {
   tiempoEspera: "",
 };
 
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5003";
+
 export default function EventosAdmin() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+  const socketRef = useRef(null);
 
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -48,18 +52,50 @@ export default function EventosAdmin() {
     }
   };
 
-
+  // ─── Guards y carga inicial ───────────────────────────────────────────────
   useEffect(() => {
-    if (!token) { navigate("/admin/login"); return; }
+    const user = JSON.parse(localStorage.getItem("user") || "null");
+    if (!token || !user || user.rol !== "ADMIN") {
+      navigate("/Homepage");
+      return;
+    }
     cargarEventos();
   }, []);
 
+  // ─── WebSocket ────────────────────────────────────────────────────────────
   useEffect(() => {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
-  if (!user || user.rol !== "ADMIN") {
-    navigate("/Homepage");
-  }
-}, []);
+    if (eventos.length === 0) return;
+
+    // Limpiar socket anterior
+    if (socketRef.current) socketRef.current.disconnect();
+
+    socketRef.current = io(SOCKET_URL);
+
+    socketRef.current.on("connect", () => {
+      // Unirse a la sala de cada evento para recibir actualizaciones
+      eventos.forEach((ev) => {
+        socketRef.current.emit("join_evento", ev.id);
+      });
+    });
+
+    socketRef.current.on("turno_actual_cambiado", (data) => {
+      setEventos((prev) =>
+        prev.map((ev) =>
+          ev.id === data.evento_id
+            ? { ...ev, turno_actual: data.turno_actual }
+            : ev
+        )
+      );
+    });
+
+    socketRef.current.on("actualizacion_cola", () => {
+      cargarEventos();
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, [eventos.length]);
 
   // ─── Filtrar ──────────────────────────────────────────────────────────────
   const eventosFiltrados = eventos.filter((e) => {
@@ -169,7 +205,6 @@ export default function EventosAdmin() {
           fecha_inicio: form.fechaInicio,
           fecha_fin: form.fechaFin,
           capacidad_maxima: Number(form.capacidad),
-          tiempo_espera_aprox: Number(form.tiempoEspera),
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
