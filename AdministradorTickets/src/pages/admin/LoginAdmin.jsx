@@ -52,7 +52,7 @@ export default function LoginAdmin() {
       <div className="login-card">
 
         <div className="login-header">
-          <img src="/logo-utslrc.png" alt="UTSLRC" className="logo" />
+          <img src="/Logo UTSLRC PNG.png" alt="UTSLRC" className="logo" />
           <h1>Sistema de Colas Virtuales</h1>
           <p>Panel Administrativo</p>
         </div>
