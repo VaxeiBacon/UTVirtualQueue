@@ -332,7 +332,9 @@ export default function ColaAdmin() {
                     type="number"
                     min="1"
                     value={timer}
+                    maxlength="3"
                     disabled={!autoSkipActivo}
+                    placeholder="max 3 digitos"
                     onChange={(e) => {
                       const t = Number(e.target.value);
                       setTimer(t);
@@ -361,6 +363,8 @@ export default function ColaAdmin() {
                 <input
                   type="number"
                   min="1"
+                  maxlength="3"
+                  placeholder="max 3 digitos"
                   value={tiempoEspera}
                   onChange={(e) => setTiempoEspera(Number(e.target.value))}
                 />
