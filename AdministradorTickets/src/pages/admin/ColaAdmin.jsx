@@ -331,17 +331,18 @@ export default function ColaAdmin() {
                   <input
                     type="number"
                     min="1"
+                    max="999"
                     value={timer}
-                    maxlength="3"
                     disabled={!autoSkipActivo}
-                    placeholder="max 3 digitos"
+                    placeholder="ej. 5"
                     onChange={(e) => {
-                      const t = Number(e.target.value);
+                      const raw = e.target.value.slice(0, 3);
+                      const t = Math.min(999, Math.max(1, Number(raw) || 1));
                       setTimer(t);
                       setTiempoRestante(t * 60);
                     }}
                   />
-                  <span>minutos</span>
+                  <span>minutos (1–999)</span>
                 </div>
               </div>
 
@@ -363,12 +364,15 @@ export default function ColaAdmin() {
                 <input
                   type="number"
                   min="1"
-                  maxlength="3"
-                  placeholder="max 3 digitos"
+                  max="999"
+                  placeholder="ej. 10"
                   value={tiempoEspera}
-                  onChange={(e) => setTiempoEspera(Number(e.target.value))}
+                  onChange={(e) => {
+                    const raw = e.target.value.slice(0, 3);
+                    setTiempoEspera(Math.min(999, Math.max(1, Number(raw) || 1)));
+                  }}
                 />
-                <span>minutos/persona</span>
+                <span>minutos/persona (1–999)</span>
                 <button
                   className="btn-control"
                   style={{ padding: "10px 16px" }}
