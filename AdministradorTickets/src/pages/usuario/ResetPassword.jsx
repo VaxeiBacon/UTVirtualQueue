@@ -7,6 +7,32 @@ import Breadcrumb from "../components/Breadcrumb";
 import Footer from "./componentes/Footer";
 import api from "../../services/api";
 
+// Componente reutilizable de input con contador
+function InputConContador({ value, onChange, maxLength = 8, ...props }) {
+  return (
+    <div style={{ position: "relative" }}>
+      <input
+        value={value}
+        onChange={onChange}
+        maxLength={maxLength}
+        {...props}
+      />
+      <span style={{
+        position: "absolute",
+        right: "10px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        fontSize: "0.75rem",
+        color: value.length >= maxLength ? "#c0392b" : "#aaa",
+        pointerEvents: "none",
+        fontWeight: value.length >= maxLength ? "700" : "400",
+      }}>
+        {value.length}/{maxLength}
+      </span>
+    </div>
+  );
+}
+
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
@@ -29,6 +55,11 @@ export default function ResetPassword() {
       return;
     }
 
+    if (matricula.length !== 8) {
+      setErrorMsg("La matrícula debe tener exactamente 8 caracteres.");
+      return;
+    }
+
     try {
       setProcesando(true);
       await api.post("/reset/enviar-codigo", { matricula });
@@ -48,6 +79,11 @@ export default function ResetPassword() {
 
     if (!codigo.trim()) {
       setErrorMsg("Ingresa el código de verificación.");
+      return;
+    }
+
+    if (codigo.length !== 6) {
+      setErrorMsg("El código debe tener exactamente 6 dígitos.");
       return;
     }
 
@@ -88,7 +124,7 @@ export default function ResetPassword() {
         matricula,
         nuevaPassword: password,
       });
-      setStep(4); // Pantalla de éxito
+      setStep(4);
     } catch (error) {
       setErrorMsg(error.response?.data?.message || "Error al cambiar la contraseña.");
     } finally {
@@ -99,7 +135,7 @@ export default function ResetPassword() {
   return (
     <div className="reset-page">
       <Navbar />
-      <Breadcrumb/>
+      <Breadcrumb />
       <div className="reset-body">
         <div className="reset-card">
 
@@ -124,12 +160,17 @@ export default function ResetPassword() {
               <h2>Restablecer contraseña</h2>
               <p>Ingresa tu matrícula y te enviaremos un código a tu correo registrado.</p>
               <div className="form-group">
-                <label>Matrícula</label>
-                <input
+                <label>Matrícula <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 8 caracteres)</span></label>
+                <InputConContador
                   type="text"
-                  placeholder="Ej. 23001234"
+                  placeholder="Ej. 20260001"
                   value={matricula}
+                  maxLength={8}
                   onChange={(e) => setMatricula(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (!/[0-9]/.test(e.key)) e.preventDefault();
+                  }}
+                  style={{ paddingRight: "55px" }}
                 />
               </div>
               <button type="submit" className="btn-primary" disabled={procesando}>
@@ -144,14 +185,22 @@ export default function ResetPassword() {
               <h2>Verificar código</h2>
               <p>Ingresa el código de 6 dígitos que enviamos a tu correo.</p>
               <div className="form-group">
-                <label>Código de verificación</label>
-                <input
+                <label>Código de verificación <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(6 dígitos)</span></label>
+                <InputConContador
                   type="text"
                   placeholder="000000"
-                  maxLength={6}
                   value={codigo}
+                  maxLength={6}
                   onChange={(e) => setCodigo(e.target.value)}
-                  style={{ letterSpacing: "6px", fontSize: "1.3rem", textAlign: "center" }}
+                  onKeyPress={(e) => {
+                    if (!/[0-9]/.test(e.key)) e.preventDefault();
+                  }}
+                  style={{
+                    letterSpacing: "6px",
+                    fontSize: "1.3rem",
+                    textAlign: "center",
+                    paddingRight: "55px"
+                  }}
                 />
               </div>
               <button type="submit" className="btn-primary" disabled={procesando}>
@@ -174,21 +223,25 @@ export default function ResetPassword() {
               <h2>Nueva contraseña</h2>
               <p>Elige una contraseña segura para tu cuenta.</p>
               <div className="form-group">
-                <label>Nueva contraseña</label>
-                <input
+                <label>Nueva contraseña <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 8 caracteres)</span></label>
+                <InputConContador
                   type="password"
                   placeholder="Mínimo 6 caracteres"
                   value={password}
+                  maxLength={8}
                   onChange={(e) => setPassword(e.target.value)}
+                  style={{ paddingRight: "55px" }}
                 />
               </div>
               <div className="form-group">
-                <label>Confirmar contraseña</label>
-                <input
+                <label>Confirmar contraseña <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 8 caracteres)</span></label>
+                <InputConContador
                   type="password"
                   placeholder="Repite la contraseña"
                   value={confirmarPassword}
+                  maxLength={8}
                   onChange={(e) => setConfirmarPassword(e.target.value)}
+                  style={{ paddingRight: "55px" }}
                 />
               </div>
               <button type="submit" className="btn-primary" disabled={procesando}>

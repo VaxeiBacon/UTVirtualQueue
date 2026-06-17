@@ -19,6 +19,58 @@ const estadoInicial = {
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "http://localhost:5003";
 
+// Componente contador reutilizable
+function InputConContador({ value, onChange, maxLength, style, ...props }) {
+  return (
+    <div style={{ position: "relative" }}>
+      <input
+        value={value}
+        onChange={onChange}
+        maxLength={maxLength}
+        style={{ paddingRight: "55px", ...style }}
+        {...props}
+      />
+      <span style={{
+        position: "absolute",
+        right: "10px",
+        top: "50%",
+        transform: "translateY(-50%)",
+        fontSize: "0.75rem",
+        color: value.length >= maxLength ? "#c0392b" : "#aaa",
+        fontWeight: value.length >= maxLength ? "700" : "400",
+        pointerEvents: "none",
+      }}>
+        {value.length}/{maxLength}
+      </span>
+    </div>
+  );
+}
+
+function TextareaConContador({ value, onChange, maxLength, ...props }) {
+  return (
+    <div style={{ position: "relative" }}>
+      <textarea
+        value={value}
+        onChange={onChange}
+        maxLength={maxLength}
+        style={{ paddingBottom: "25px" }}
+        {...props}
+      />
+      <span style={{
+        position: "absolute",
+        right: "10px",
+        bottom: "8px",
+        fontSize: "0.75rem",
+        color: value.length >= maxLength ? "#c0392b" : "#aaa",
+        fontWeight: value.length >= maxLength ? "700" : "400",
+        pointerEvents: "none",
+      }}>
+        {value.length}/{maxLength}
+      </span>
+    </div>
+  );
+}
+
 export default function EventosAdmin() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -29,7 +81,6 @@ export default function EventosAdmin() {
   const [filtro, setFiltro] = useState("ACTIVO");
   const [busqueda, setBusqueda] = useState("");
 
-  // Modal crear/editar
   const [mostrarModal, setMostrarModal] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
   const [eventoEditandoId, setEventoEditandoId] = useState(null);
@@ -37,7 +88,6 @@ export default function EventosAdmin() {
   const [errorForm, setErrorForm] = useState("");
   const [procesando, setProcesando] = useState(false);
 
-  // ─── Cargar eventos ───────────────────────────────────────────────────────
   const cargarEventos = async () => {
     try {
       setCargando(true);
@@ -52,7 +102,6 @@ export default function EventosAdmin() {
     }
   };
 
-  // ─── Guards y carga inicial ───────────────────────────────────────────────
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
     if (!token || !user || user.rol !== "ADMIN") {
@@ -62,17 +111,14 @@ export default function EventosAdmin() {
     cargarEventos();
   }, []);
 
-  // ─── WebSocket ────────────────────────────────────────────────────────────
   useEffect(() => {
     if (eventos.length === 0) return;
 
-    // Limpiar socket anterior
     if (socketRef.current) socketRef.current.disconnect();
 
     socketRef.current = io(SOCKET_URL);
 
     socketRef.current.on("connect", () => {
-      // Unirse a la sala de cada evento para recibir actualizaciones
       eventos.forEach((ev) => {
         socketRef.current.emit("join_evento", ev.id);
       });
@@ -97,16 +143,12 @@ export default function EventosAdmin() {
     };
   }, [eventos.length]);
 
-  // ─── Filtrar ──────────────────────────────────────────────────────────────
   const eventosFiltrados = eventos.filter((e) => {
     const coincideEstado = e.estado === filtro;
-    const coincideBusqueda = e.nombre
-      ?.toLowerCase()
-      .includes(busqueda.toLowerCase());
+    const coincideBusqueda = e.nombre?.toLowerCase().includes(busqueda.toLowerCase());
     return coincideEstado && coincideBusqueda;
   });
 
-  // ─── Helpers form ─────────────────────────────────────────────────────────
   const handleFormChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -144,10 +186,11 @@ export default function EventosAdmin() {
     setErrorForm("");
   };
 
-  // ─── Validar form ─────────────────────────────────────────────────────────
   const validarForm = () => {
     if (!form.nombre.trim()) return "Debes ingresar un nombre.";
+    if (form.nombre.length > 50) return "El nombre no puede superar 50 caracteres.";
     if (!form.descripcion.trim()) return "Debes ingresar una descripción.";
+    if (form.descripcion.length > 200) return "La descripción no puede superar 200 caracteres.";
     if (!form.fechaInicio) return "Debes seleccionar la fecha de inicio.";
     if (!form.fechaFin) return "Debes seleccionar la fecha de finalización.";
     if (!modoEdicion && new Date(form.fechaInicio) <= new Date())
@@ -156,30 +199,28 @@ export default function EventosAdmin() {
       return "La fecha de finalización debe ser posterior a la de inicio.";
     if (!form.capacidad || Number(form.capacidad) <= 0)
       return "La capacidad máxima debe ser mayor a 0.";
+    if (String(form.capacidad).length > 5)
+      return "La capacidad máxima no puede superar 5 dígitos.";
     if (!form.tiempoEspera || Number(form.tiempoEspera) <= 0)
       return "El tiempo de espera debe ser mayor a 0.";
+    if (String(form.tiempoEspera).length > 3)
+      return "El tiempo de espera no puede superar 3 dígitos.";
     return null;
   };
 
-  // ─── Crear evento ─────────────────────────────────────────────────────────
   const handleCrear = async () => {
     const error = validarForm();
     if (error) { setErrorForm(error); return; }
-
     try {
       setProcesando(true);
-      await api.post(
-        "/eventos",
-        {
-          nombre: form.nombre,
-          descripcion: form.descripcion,
-          fecha_inicio: form.fechaInicio,
-          fecha_fin: form.fechaFin,
-          capacidad_maxima: Number(form.capacidad),
-          tiempo_espera_aprox: Number(form.tiempoEspera),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.post("/eventos", {
+        nombre: form.nombre,
+        descripcion: form.descripcion,
+        fecha_inicio: form.fechaInicio,
+        fecha_fin: form.fechaFin,
+        capacidad_maxima: Number(form.capacidad),
+        tiempo_espera_aprox: Number(form.tiempoEspera),
+      }, { headers: { Authorization: `Bearer ${token}` } });
       alert("¡Evento creado correctamente!");
       cerrarModal();
       cargarEventos();
@@ -190,24 +231,18 @@ export default function EventosAdmin() {
     }
   };
 
-  // ─── Editar evento ────────────────────────────────────────────────────────
   const handleEditar = async () => {
     const error = validarForm();
     if (error) { setErrorForm(error); return; }
-
     try {
       setProcesando(true);
-      await api.put(
-        `/eventos/${eventoEditandoId}`,
-        {
-          nombre: form.nombre,
-          descripcion: form.descripcion,
-          fecha_inicio: form.fechaInicio,
-          fecha_fin: form.fechaFin,
-          capacidad_maxima: Number(form.capacidad),
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      await api.put(`/eventos/${eventoEditandoId}`, {
+        nombre: form.nombre,
+        descripcion: form.descripcion,
+        fecha_inicio: form.fechaInicio,
+        fecha_fin: form.fechaFin,
+        capacidad_maxima: Number(form.capacidad),
+      }, { headers: { Authorization: `Bearer ${token}` } });
       alert("Evento actualizado correctamente.");
       cerrarModal();
       cargarEventos();
@@ -218,16 +253,10 @@ export default function EventosAdmin() {
     }
   };
 
-  // ─── Cambiar estado ───────────────────────────────────────────────────────
   const handleCambiarEstado = async (eventoId, nuevoEstado) => {
-    const confirmar = window.confirm(
-      `¿Confirmas cambiar el estado a "${nuevoEstado}"?`
-    );
-    if (!confirmar) return;
-
+    if (!window.confirm(`¿Confirmas cambiar el estado a "${nuevoEstado}"?`)) return;
     try {
-      await api.patch(
-        `/eventos/${eventoId}/estado`,
+      await api.patch(`/eventos/${eventoId}/estado`,
         { estado: nuevoEstado },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -237,7 +266,6 @@ export default function EventosAdmin() {
     }
   };
 
-  // ─── Badge ────────────────────────────────────────────────────────────────
   const getBadgeClass = (estado) => {
     switch (estado) {
       case "ACTIVO": return "badge-activo";
@@ -255,7 +283,6 @@ export default function EventosAdmin() {
     });
   };
 
-  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="eventos-admin-page">
       <NavbarAdmin />
@@ -269,12 +296,9 @@ export default function EventosAdmin() {
 
         <div className="seccion-header">
           <h2>Eventos</h2>
-          <button className="btn-crear" onClick={abrirModalCrear}>
-            + Crear Evento
-          </button>
+          <button className="btn-crear" onClick={abrirModalCrear}>+ Crear Evento</button>
         </div>
 
-        {/* Filtros por estado */}
         <div className="filtros">
           {["ACTIVO", "PAUSADO", "FINALIZADO", "CANCELADO"].map((estado) => (
             <button
@@ -287,7 +311,6 @@ export default function EventosAdmin() {
           ))}
         </div>
 
-        {/* Búsqueda */}
         <input
           className="header-busqueda"
           type="text"
@@ -296,83 +319,51 @@ export default function EventosAdmin() {
           onChange={(e) => setBusqueda(e.target.value)}
         />
 
-        {/* Grid de eventos */}
         {cargando ? (
           <p style={{ textAlign: "center", color: "#888" }}>Cargando eventos...</p>
         ) : eventosFiltrados.length === 0 ? (
-          <p style={{ textAlign: "center", color: "#888" }}>
-            No hay eventos con estado "{filtro}".
-          </p>
+          <p style={{ textAlign: "center", color: "#888" }}>No hay eventos con estado "{filtro}".</p>
         ) : (
           <div className="eventos-grid">
             {eventosFiltrados.map((evento) => (
               <div key={evento.id} className="evento-card">
-                <span className={getBadgeClass(evento.estado)}>
-                  {evento.estado}
-                </span>
-
+                <span className={getBadgeClass(evento.estado)}>{evento.estado}</span>
                 <h3>{evento.nombre}</h3>
-                <p style={{ color: "#555", margin: "8px 0" }}>
-                  {evento.descripcion || "Sin descripción."}
-                </p>
-
+                <p style={{ color: "#555", margin: "8px 0" }}>{evento.descripcion || "Sin descripción."}</p>
                 <div className="evento-info">
                   <span>📅 {formatearFecha(evento.fecha_inicio)}</span>
                   <span>👥 {evento.turno_actual || 0} / {evento.capacidad_maxima}</span>
                 </div>
-
                 <div className="turno-actual">
                   <span>Turno actual sirviendo</span>
                   <p className="actual">{evento.turno_actual || 0}</p>
                 </div>
-
-                {/* Acciones */}
                 <div className="acciones-evento">
-                  <button
-                    className="btn-cola"
-                    onClick={() => navigate(`/admin/cola?evento=${evento.id}`)}
-                  >
-                    Ver Cola
-                  </button>
-                  <button
-                    className="btn-editar"
-                    onClick={() => abrirModalEditar(evento)}
-                  >
-                    Editar
-                  </button>
+                  <button className="btn-cola" onClick={() => navigate(`/admin/cola?evento=${evento.id}`)}>Ver Cola</button>
+                  <button className="btn-editar" onClick={() => abrirModalEditar(evento)}>Editar</button>
                 </div>
-
-                {/* Cambiar estado */}
                 <div style={{ display: "flex", gap: "6px", marginTop: "10px", flexWrap: "wrap" }}>
                   {evento.estado !== "ACTIVO" && (
-                    <button
-                      onClick={() => handleCambiarEstado(evento.id, "ACTIVO")}
-                      style={{ flex: 1, padding: "8px", background: "#2E7D32", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
-                    >
+                    <button onClick={() => handleCambiarEstado(evento.id, "ACTIVO")}
+                      style={{ flex: 1, padding: "8px", background: "#2E7D32", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>
                       ▶ Activar
                     </button>
                   )}
                   {evento.estado === "ACTIVO" && (
-                    <button
-                      onClick={() => handleCambiarEstado(evento.id, "PAUSADO")}
-                      style={{ flex: 1, padding: "8px", background: "#EF6C00", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
-                    >
+                    <button onClick={() => handleCambiarEstado(evento.id, "PAUSADO")}
+                      style={{ flex: 1, padding: "8px", background: "#EF6C00", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>
                       ⏸ Pausar
                     </button>
                   )}
                   {(evento.estado === "ACTIVO" || evento.estado === "PAUSADO") && (
-                    <button
-                      onClick={() => handleCambiarEstado(evento.id, "FINALIZADO")}
-                      style={{ flex: 1, padding: "8px", background: "#546E7A", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
-                    >
+                    <button onClick={() => handleCambiarEstado(evento.id, "FINALIZADO")}
+                      style={{ flex: 1, padding: "8px", background: "#546E7A", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>
                       ✓ Finalizar
                     </button>
                   )}
                   {evento.estado !== "CANCELADO" && evento.estado !== "FINALIZADO" && (
-                    <button
-                      onClick={() => handleCambiarEstado(evento.id, "CANCELADO")}
-                      style={{ flex: 1, padding: "8px", background: "#c0392b", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}
-                    >
+                    <button onClick={() => handleCambiarEstado(evento.id, "CANCELADO")}
+                      style={{ flex: 1, padding: "8px", background: "#c0392b", color: "white", border: "none", cursor: "pointer", fontSize: "0.8rem" }}>
                       ✕ Cancelar
                     </button>
                   )}
@@ -383,31 +374,33 @@ export default function EventosAdmin() {
         )}
       </div>
 
-      {/* ─── Modal Crear / Editar ──────────────────────────────────────────── */}
+      {/* ─── Modal ────────────────────────────────────────────────────────── */}
       {mostrarModal && (
         <div className="modal-overlay" onClick={cerrarModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <h2>{modoEdicion ? "Editar Evento" : "Crear Evento"}</h2>
 
             <div className="form-group">
-              <label>Nombre del evento</label>
-              <input
+              <label>Nombre del evento <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 50)</span></label>
+              <InputConContador
                 type="text"
                 name="nombre"
                 value={form.nombre}
+                maxLength={50}
                 onChange={handleFormChange}
-                placeholder="Ej. Inscripciones Enero 2028"
+                placeholder="Ej. Inscripciones Enero 2028 (Max 50 caracteres)"
               />
             </div>
 
             <div className="form-group">
-              <label>Descripción</label>
-              <textarea
+              <label>Descripción <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 200)</span></label>
+              <TextareaConContador
                 name="descripcion"
                 rows="3"
                 value={form.descripcion}
+                maxLength={200}
                 onChange={handleFormChange}
-                placeholder="Describe brevemente el evento..."
+                placeholder="Describe brevemente el evento... (Max. 200 caracteres)"
               />
             </div>
 
@@ -440,24 +433,31 @@ export default function EventosAdmin() {
             </div>
 
             <div className="form-group">
-              <label>Capacidad máxima</label>
+              <label>Capacidad máxima <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 5 dígitos)</span></label>
               <input
                 type="number"
                 name="capacidad"
                 min="1"
+                max="99999"
                 value={form.capacidad}
-                onChange={handleFormChange}
+                onChange={(e) => {
+                  if (e.target.value.length <= 5) handleFormChange(e);
+                }}
               />
             </div>
 
             <div className="form-group">
-              <label>Tiempo de espera aproximado (minutos)</label>
+              <label>Tiempo de espera aproximado (min) <span style={{ color: "#aaa", fontSize: "0.8rem" }}>(máx. 3 dígitos)</span></label>
               <input
                 type="number"
                 name="tiempoEspera"
                 min="1"
+                max="999"
                 value={form.tiempoEspera}
-                onChange={handleFormChange}
+                placeholder="3 digitos maximo"
+                onChange={(e) => {
+                  if (e.target.value.length <= 3) handleFormChange(e);
+                }}
               />
             </div>
 
@@ -468,17 +468,11 @@ export default function EventosAdmin() {
             )}
 
             <div style={{ display: "flex", gap: "10px" }}>
-              <button
-                className="btn-guardar"
-                disabled={procesando}
-                onClick={modoEdicion ? handleEditar : handleCrear}
-              >
+              <button className="btn-guardar" disabled={procesando} onClick={modoEdicion ? handleEditar : handleCrear}>
                 {procesando ? "Guardando..." : modoEdicion ? "Guardar Cambios" : "Crear Evento"}
               </button>
-              <button
-                onClick={cerrarModal}
-                style={{ padding: "12px 20px", background: "transparent", border: "2px solid #205846", color: "#205846", cursor: "pointer", fontWeight: "bold" }}
-              >
+              <button onClick={cerrarModal}
+                style={{ padding: "12px 20px", background: "transparent", border: "2px solid #205846", color: "#205846", cursor: "pointer", fontWeight: "bold" }}>
                 Cancelar
               </button>
             </div>

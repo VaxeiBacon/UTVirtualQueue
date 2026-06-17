@@ -20,7 +20,7 @@ export default function NavbarAdmin() {
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    navigate("/admin/login");
+    navigate("/Homepage");
     window.location.reload();
   };
 
